@@ -1,0 +1,34 @@
+# IMPORTING REQUIRED LIBRARIES
+import os
+import requests
+from datetime import datetime, date, time
+
+# CREATE DICTIONARY WITH THE LINK AND IT'S FILE NAME.
+Links = {
+		'https://go.microsoft.com/fwlink/?LinkID=187316&arch=x86&nri=true': "Network Real-time Inspection definitions 32-bit.exe",
+		'https://go.microsoft.com/fwlink/?LinkID=187316&arch=x64&nri=true': "Network Real-time Inspection definitions 64-bit.exe",
+        'https://go.microsoft.com/fwlink/?LinkID=121721&arch=x86': "Microsoft Defender Antivirus for Windows 10 and Windows 8.1 32-bit.exe",
+        'https://go.microsoft.com/fwlink/?LinkID=121721&arch=x64': "Microsoft Defender Antivirus for Windows 10 and Windows 8.1 64-bit."
+		}
+
+# FUNCTION TO CREATE A FOLDER WITH CURRENT DATE.
+def create_folder():
+	today = datetime.now() #ASSIGNING THE DATE AND TIME TO THE VARIABLE today
+	new = ("D:\windows Defender_Updates-- ") # ASSIGNING THE STRING (FOLDER NAME) 
+	newpath = (new + today.strftime('%d-%m-%y')) # ASSIGNING THE FOLDER NAME AFTER ADDING THE DATE TO THE END OF STRING (NEW)
+	if not os.path.exists(newpath): # CHECKS IF THE FOLDER WITH THE GIVEN NAME EXISTS.
+		os.makedirs(newpath) # CREATES THE FOLDER WITH THE GIVEN NAME.
+	os.chdir(newpath) # CHANGE THE WORKING DIRECTORY OF PYTHON TO THE CREATED FOLDER
+
+#FUNCTION TO DOWNLOAD THE FILE.
+def download_file():
+	for url, file_name in Links.items(): # ITERATES THROUGH THE DICTIONARY (LINKS)
+		r = requests.get(url, allow_redirects=True) # USING REQUEST LIBRARY TO DOWNLOAD THE FILE FROM THR LINK.
+		open(file_name, 'wb').write(r.content) # RE-NAMING THE DOWNLOADED FILES WITH THE FILE NAME GIVEN IN DICTIONARY
+
+
+#CALLING THE FUNCTIONS.
+create_folder()
+download_file()
+
+
