@@ -2,6 +2,7 @@
 import os
 import requests
 from datetime import datetime, date, time
+from zipfile import ZipFile
 
 # CREATE DICTIONARY WITH THE LINK AND IT'S FILE NAME.
 Links = {
@@ -11,6 +12,10 @@ Links = {
         'https://go.microsoft.com/fwlink/?LinkID=121721&arch=x64': "Microsoft Defender Antivirus for Windows 10 and Windows 8.1 64-bit."
 		}
 
+Location = []
+windows8files=[]
+windows10files=[]
+
 # FUNCTION TO CREATE A FOLDER WITH CURRENT DATE.
 def create_folder():
 	today = datetime.now() #ASSIGNING THE DATE AND TIME TO THE VARIABLE today
@@ -19,6 +24,7 @@ def create_folder():
 	if not os.path.exists(newpath): # CHECKS IF THE FOLDER WITH THE GIVEN NAME EXISTS.
 		os.makedirs(newpath) # CREATES THE FOLDER WITH THE GIVEN NAME.
 	os.chdir(newpath) # CHANGE THE WORKING DIRECTORY OF PYTHON TO THE CREATED FOLDER
+	Location.append(newpath)
 
 #FUNCTION TO DOWNLOAD THE FILE.
 def download_file():
@@ -26,9 +32,22 @@ def download_file():
 		r = requests.get(url, allow_redirects=True) # USING REQUEST LIBRARY TO DOWNLOAD THE FILE FROM THR LINK.
 		open(file_name, 'wb').write(r.content) # RE-NAMING THE DOWNLOADED FILES WITH THE FILE NAME GIVEN IN DICTIONARY
 
-
+def collect_file_name():
+    for (dirpath, dirnames, filenames) in os.walk(Location[0]):
+        for filename in filenames:
+            if 'Microsoft' in str(filename):
+                windows10files.append(filename)
+            windows8files.append(filename)
+            
+def tozip(list_to_zip, name):
+    with ZipFile(name+'.zip','w') as zip: 
+# writing each file one by one 
+        for file in list_to_zip: 
+            zip.write(file)
+        
 #CALLING THE FUNCTIONS.
 create_folder()
 download_file()
-
-
+collect_file_name()
+tozip(windows10files, "windows 10 files")
+tozip(windows8files, "windows 8 files")
